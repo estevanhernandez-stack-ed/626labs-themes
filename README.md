@@ -15,7 +15,7 @@ Cyan `#17d4fa` carries logic — functions, methods, properties, types. Magenta 
 
 From the VS Code Marketplace:
 
-1. `Ctrl+P` (or `Cmd+P` on Mac) → `ext install estevanhernandez.626labs-themes`
+1. `Ctrl+P` (or `Cmd+P` on Mac) → `ext install 626LabsLLC.626labs-themes`
 2. Open the command palette → **Preferences: Color Theme**
 3. Pick **626 Labs Night** or **626 Labs Storm**
 

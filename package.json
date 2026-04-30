@@ -3,7 +3,7 @@
   "displayName": "626 Labs Themes",
   "description": "The 626 Labs theme family — neon-duotone dark, cyan and magenta on deep navy. Two variants: Night (deeper) and Storm (lighter). Structurally inspired by Tokyo Night.",
   "version": "0.1.0",
-  "publisher": "estevanhernandez",
+  "publisher": "626LabsLLC",
   "license": "MIT",
   "engines": {
     "vscode": "^1.80.0"
