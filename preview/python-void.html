@@ -1,0 +1,74 @@
+<!doctype html><html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#000000;}
+  .frame{background:#000000;color:#e7edf5;padding:24px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;line-height:1.55;}
+  .frame pre{margin:0;background:transparent !important;}
+  .frame .shiki{background:transparent !important;}
+</style></head><body><div class="frame"><pre class="shiki 626-labs-void" style="background-color:#000000;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span><span style="color:#2BD99A;font-style:italic">626 Labs — sample Python surface for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#2BD99A;font-style:italic">Cyan owns logic. Magenta owns control flow. Green owns content.</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> __future__ </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> annotations</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> json</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> dataclasses </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> dataclass, field</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> pathlib </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Path</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> typing </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Iterable, Optional</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">BRAND</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> {</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">magenta</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">navy</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#E7EDF5">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">@dataclass</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">frozen=</span><span style="color:#FFB454">True</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    """</span><span style="color:#2BD99A;font-style:italic">A single architectural decision logged for The Architect.</span><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">    id</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    title: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    stakes: </span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#C4CDDA"> =</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">medium</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">    tags: tuple</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#E7EDF5">, </span><span style="color:#FFB454">...</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#17D4FA"> field</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">default_factory=</span><span style="color:#5CE6FF;font-style:italic">tuple</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#E7EDF5">    notes: Optional</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> None</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> is_high_stakes</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">bool</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#FF5AA3"> self</span><span style="color:#E7EDF5">.stakes </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Architect</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> __init__</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">storage</span><span style="color:#E7EDF5">: Path</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.storage </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> storage</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history: list</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> []</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">decision</span><span style="color:#E7EDF5">: Decision</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#E7EDF5"> decision</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> recent</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">limit</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> 10</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Iterable</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]:</span></span>
+<span class="line"><span style="color:#F22F89">        yield from</span><span style="color:#17D4FA"> reversed</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.history</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">-</span><span style="color:#E7EDF5">limit:</span><span style="color:#8E9BAD">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> hydrate</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">        raw </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> json.</span><span style="color:#17D4FA">loads</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.storage.</span><span style="color:#17D4FA">read_text</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">encoding=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">utf-8</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#F22F89">        for</span><span style="color:#E7EDF5"> entry </span><span style="color:#F22F89">in</span><span style="color:#E7EDF5"> raw:</span></span>
+<span class="line"><span style="color:#E7EDF5">            decision </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Decision</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">**</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">            if</span><span style="color:#E7EDF5"> decision.</span><span style="color:#17D4FA">is_high_stakes</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">                print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"high-stakes: </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">decision.id</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#FF5AA3">            self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#17D4FA"> len</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">raw</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">def</span><span style="color:#17D4FA"> main</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">    arch </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Architect</span><span style="color:#8E9BAD">(</span><span style="color:#17D4FA">Path</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">./decisions.json</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#E7EDF5">    count </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> arch.</span><span style="color:#17D4FA">hydrate</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"><span style="color:#17D4FA">    print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"hydrated </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">count</span><span style="color:#FFB454">}</span><span style="color:#2BD99A"> decisions, brand=</span><span style="color:#FFB454">{BRAND</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">]</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">if</span><span style="color:#E7EDF5"> __name__ </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">__main__</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">    main</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"></span></code></pre></div></body></html>

@@ -4,6 +4,12 @@ All notable changes to **626 Labs Themes** are documented here.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses Conventional Commits.
 
+## [0.1.1] — 2026-04-29
+
+### Added
+
+- feat: third variant — **626 Labs Void**, a true-OLED black variant. Editor and chrome surfaces all `#000000` so OLED pixels actually turn off. Elevated surfaces (popovers, fold backgrounds, inlay hints) sit at `#050c18` for legibility. Terminal ANSI black preserved as `#0f1f31` so terminal "black" stays visible. Same syntax palette as Night and Storm — cyan owns logic, magenta owns decision.
+
 ## [0.1.0] — 2026-04-29
 
 ### Added

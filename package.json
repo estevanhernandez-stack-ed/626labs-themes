@@ -1,8 +1,8 @@
 {
   "name": "626labs-themes",
   "displayName": "626 Labs Themes",
-  "description": "The 626 Labs theme family — neon-duotone dark, cyan and magenta on deep navy. Two variants: Night (deeper) and Storm (lighter). Structurally inspired by Tokyo Night.",
-  "version": "0.1.0",
+  "description": "The 626 Labs theme family — neon-duotone dark, cyan and magenta on deep navy. Three variants: Night (deeper), Storm (lighter), and Void (true OLED black). Structurally inspired by Tokyo Night.",
+  "version": "0.1.1",
   "publisher": "626LabsLLC",
   "license": "MIT",
   "engines": {
@@ -43,11 +43,18 @@
         "label": "626 Labs Storm",
         "uiTheme": "vs-dark",
         "path": "./themes/626labs-storm-color-theme.json"
+      },
+      {
+        "label": "626 Labs Void",
+        "uiTheme": "vs-dark",
+        "path": "./themes/626labs-void-color-theme.json"
       }
     ]
   },
   "scripts": {
     "build:storm": "node scripts/build-storm.js",
+    "build:void": "node scripts/build-void.js",
+    "build": "node scripts/build-storm.js && node scripts/build-void.js",
     "package": "vsce package",
     "publish": "vsce publish"
   }
