@@ -1,0 +1,26 @@
+{
+  "name": "626labs-night",
+  "displayName": "626 Labs Night",
+  "version": "0.1.0",
+  "publisher": "estevanhernandez",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Themes"],
+  "keywords": ["theme", "dark", "626labs", "neon", "tokyo night", "vibe coding"],
+  "brand": {
+    "duo": ["#17d4fa", "#f22f89"],
+    "field": "#0a1524",
+    "tokens": {
+      "logic": "#17d4fa",
+      "decision": "#f22f89",
+      "content": "#2bd99a",
+      "constant": "#ffb454"
+    },
+    "shipsWith": [
+      { "label": "626 Labs Night", "type": "deeper" },
+      { "label": "626 Labs Storm", "type": "lighter" }
+    ]
+  },
+  "tagline": "Imagine Something Else."
+}

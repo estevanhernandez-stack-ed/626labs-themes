@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>626 Labs Night — preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #050c18;
+    color: #c4cdda;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    padding: 32px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0 0 6px 0;
+  }
+  .subhead { color: #8e9bad; margin: 0 0 32px 0; font-size: 14px; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .vscode-window {
+    background: var(--editor-bg);
+    border: 1px solid #1e2a3d;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  }
+  .title-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 30px;
+    padding: 0 12px;
+    background: var(--editor-bg);
+    border-bottom: 1px solid #0a1524;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .dot.red { background: #ff5f57; }
+  .dot.yellow { background: #febc2e; }
+  .dot.green { background: #28c841; }
+  .title {
+    margin-left: 12px;
+    font-size: 11px;
+    color: #8e9bad;
+    letter-spacing: 0.04em;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+  }
+  .window-body {
+    display: flex;
+    height: 720px;
+  }
+  .activity-bar {
+    width: 42px;
+    background: var(--activity-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 12px;
+    gap: 14px;
+  }
+  .activity-item {
+    width: 22px; height: 22px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+  }
+  .activity-item.active {
+    background: rgba(23,212,250,0.18);
+    border-left: 2px solid var(--activity-fg);
+    margin-left: -2px;
+  }
+  .side-bar {
+    width: 200px;
+    background: var(--sidebar-bg);
+    padding: 8px 0;
+    border-right: 1px solid #0a1524;
+    font-size: 12px;
+  }
+  .sidebar-header {
+    padding: 6px 12px;
+    font-size: 10px;
+    color: #c4cdda;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+  .sidebar-folder {
+    padding: 4px 12px;
+    color: #c4cdda;
+    font-weight: 600;
+  }
+  .sidebar-file {
+    padding: 4px 24px;
+    color: #c4cdda;
+    cursor: pointer;
+  }
+  .sidebar-file.selected {
+    background: rgba(23,212,250,0.14);
+    color: #e7edf5;
+  }
+  .editor-shell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--editor-bg);
+    overflow: hidden;
+  }
+  .tab-strip {
+    display: flex;
+    background: var(--sidebar-bg);
+    border-bottom: 1px solid #0a1524;
+    overflow-x: auto;
+  }
+  .tab {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--tab-fg-inactive);
+    background: var(--tab-inactive);
+    border-right: 1px solid #0a1524;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .tab.active {
+    color: var(--tab-fg-active);
+    background: var(--tab-active);
+    border-top: 2px solid var(--tab-border);
+    padding-top: 6px;
+  }
+  .editor-stack {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+  .editor-pane {
+    display: none;
+    height: 100%;
+    overflow: auto;
+  }
+  .editor-pane.active { display: flex; }
+  .code-area {
+    flex: 1;
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    overflow: auto;
+  }
+  .code-area pre {
+    margin: 0;
+    background: transparent !important;
+  }
+  .code-area .shiki { background: transparent !important; }
+  .status-bar {
+    height: 24px;
+    background: var(--status-bg);
+    color: var(--status-fg);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 24px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<h1>626 Labs Night</h1>
+<p class="subhead">Two variants — Night (deeper) and Storm (lighter). Same syntax palette. Cyan owns logic, magenta owns decision.</p>
+<div class="grid">
+
+    <section class="vscode-window" style="--editor-bg:#0a1524;--sidebar-bg:#0f1f31;--tab-active:#0a1524;--tab-inactive:#0f1f31;--fg:#e7edf5;--tab-fg-active:#e7edf5;--tab-fg-inactive:#8e9bad;--tab-border:#17d4fa;--ln-fg:#5e6b7f;--status-bg:#0f1f31;--status-fg:#c4cdda;--activity-bg:#0f1f31;--activity-fg:#17d4fa;">
+      <header class="title-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title">626 Labs Night</span>
+      </header>
+      <div class="window-body">
+        <aside class="activity-bar">
+          <div class="activity-item active"></div>
+          <div class="activity-item"></div>
+          <div class="activity-item"></div>
+          <div class="activity-item"></div>
+        </aside>
+        <aside class="side-bar">
+          <div class="sidebar-section">
+            <div class="sidebar-header">EXPLORER</div>
+            <div class="sidebar-folder">626labs-night</div>
+            <div class="sidebar-file selected">example.ts</div>
+            <div class="sidebar-file">example.py</div>
+            <div class="sidebar-file">example.md</div>
+            <div class="sidebar-file">example.json</div>
+            <div class="sidebar-file">example.sh</div>
+            <div class="sidebar-file">example.css</div>
+          </div>
+        </aside>
+        <main class="editor-shell">
+          <div class="tab-strip">
+    <div class="tab active" data-target="626-labs-night-0">example.ts</div>
+  
+    <div class="tab " data-target="626-labs-night-1">example.py</div>
+  
+    <div class="tab " data-target="626-labs-night-2">example.md</div>
+  
+    <div class="tab " data-target="626-labs-night-3">example.json</div>
+  
+    <div class="tab " data-target="626-labs-night-4">example.sh</div>
+  
+    <div class="tab " data-target="626-labs-night-5">example.css</div>
+  </div>
+          <div class="editor-stack">
+    <div class="editor-pane active" id="626-labs-night-0">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">// 626 Labs — sample TypeScript surface for the theme preview.</span></span>
+<span class="line"><span style="color:#5E6B7F;font-style:italic">// Cyan owns logic. Magenta owns control flow. Green owns content.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#8E9BAD"> { </span><span style="color:#5CE6FF;font-style:italic">readFileSync</span><span style="color:#8E9BAD"> }</span><span style="color:#F22F89"> from</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">node:fs</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#F22F89"> type</span><span style="color:#8E9BAD"> { </span><span style="color:#5CE6FF;font-style:italic">Project</span><span style="color:#8E9BAD"> }</span><span style="color:#F22F89"> from</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">./types</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">const</span><span style="color:#E7EDF5"> BRAND </span><span style="color:#C4CDDA">=</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#5CE6FF">  cyan:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#5CE6FF">  magenta:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#5CE6FF">  navy:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA"> as</span><span style="color:#FF5AA3"> const</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">interface</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> id</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> project</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Project</span><span style="color:#C4CDDA"> |</span><span style="color:#5CE6FF;font-style:italic"> null</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> stakes</span><span style="color:#C4CDDA">:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">low</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> |</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">medium</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> |</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#5CE6FF">  tags</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#8E9BAD">[]</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#5CE6FF">  notes</span><span style="color:#C4CDDA">?:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Architect</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  private</span><span style="color:#FF5AA3"> readonly</span><span style="color:#5CE6FF"> history</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[]</span><span style="color:#C4CDDA"> =</span><span style="color:#8E9BAD"> []</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">  constructor</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">private</span><span style="color:#FF5AA3"> readonly</span><span style="color:#C4CDDA"> storagePath:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#8E9BAD">)</span><span style="color:#8E9BAD"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">  log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">entry:</span><span style="color:#5CE6FF;font-style:italic"> Omit</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">DecisionLog</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">id</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">></span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> id</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> crypto</span><span style="color:#17D4FA">.randomUUID</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> next</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#C4CDDA"> =</span><span style="color:#8E9BAD"> { </span><span style="color:#E7EDF5">id</span><span style="color:#8E9BAD">, </span><span style="color:#F22F89;font-weight:bold">...</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD"> };</span></span>
+<span class="line"><span style="color:#FF5AA3">    this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.push</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">next</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#E7EDF5"> next</span><span style="color:#8E9BAD">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">  recent</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">limit</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> 10</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[]</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#FF5AA3"> this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.slice</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">-</span><span style="color:#E7EDF5">limit</span><span style="color:#8E9BAD">)</span><span style="color:#17D4FA">.reverse</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">  async</span><span style="color:#17D4FA"> hydrate</span><span style="color:#8E9BAD">()</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Promise</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">number</span><span style="color:#E7EDF5">> </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> raw</span><span style="color:#C4CDDA"> =</span><span style="color:#17D4FA"> readFileSync</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">this</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">storagePath</span><span style="color:#8E9BAD">, </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">utf8</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> parsed</span><span style="color:#C4CDDA"> =</span><span style="color:#5CE6FF;font-style:italic"> JSON</span><span style="color:#17D4FA">.parse</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">raw</span><span style="color:#8E9BAD">) </span><span style="color:#C4CDDA">as</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[];</span></span>
+<span class="line"><span style="color:#F22F89">    for</span><span style="color:#8E9BAD"> (</span><span style="color:#FF5AA3">const</span><span style="color:#E7EDF5"> entry</span><span style="color:#C4CDDA"> of</span><span style="color:#E7EDF5"> parsed</span><span style="color:#8E9BAD">) {</span></span>
+<span class="line"><span style="color:#F22F89">      if</span><span style="color:#8E9BAD"> (</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">stakes</span><span style="color:#FF5AA3"> ===</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">) {</span></span>
+<span class="line"><span style="color:#E7EDF5">        console</span><span style="color:#17D4FA">.warn</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">`</span><span style="color:#2BD99A">high-stakes: </span><span style="color:#5CE6FF">${</span><span style="color:#E7EDF5">entry</span><span style="color:#2BD99A">.</span><span style="color:#5CE6FF">id</span><span style="color:#5CE6FF">}</span><span style="color:#C4CDDA">`</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">      }</span></span>
+<span class="line"><span style="color:#FF5AA3">      this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.push</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">    }</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#E7EDF5"> parsed</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">length</span><span style="color:#8E9BAD">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">export</span><span style="color:#FF5AA3"> async</span><span style="color:#FF5AA3"> function</span><span style="color:#17D4FA"> main</span><span style="color:#8E9BAD">()</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Promise</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">void</span><span style="color:#E7EDF5">> </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#FF5AA3">  const</span><span style="color:#E7EDF5"> arch</span><span style="color:#C4CDDA"> =</span><span style="color:#C4CDDA"> new</span><span style="color:#17D4FA"> Architect</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">./decisions.json</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#FF5AA3">  const</span><span style="color:#E7EDF5"> count</span><span style="color:#C4CDDA"> =</span><span style="color:#F22F89"> await</span><span style="color:#E7EDF5"> arch</span><span style="color:#17D4FA">.hydrate</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#E7EDF5">  console</span><span style="color:#17D4FA">.log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">`</span><span style="color:#2BD99A">hydrated </span><span style="color:#5CE6FF">${</span><span style="color:#E7EDF5">count</span><span style="color:#5CE6FF">}</span><span style="color:#2BD99A"> decisions, brand=</span><span style="color:#5CE6FF">${</span><span style="color:#5CE6FF;font-style:italic">BRAND</span><span style="color:#2BD99A">.</span><span style="color:#5CE6FF">cyan</span><span style="color:#5CE6FF">}</span><span style="color:#C4CDDA">`</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">main</span><span style="color:#8E9BAD">()</span><span style="color:#17D4FA">.catch</span><span style="color:#8E9BAD">((</span><span style="color:#C4CDDA">err</span><span style="color:#8E9BAD">)</span><span style="color:#FF5AA3"> =></span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#E7EDF5">  console</span><span style="color:#17D4FA">.error</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">failed to start:</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">, </span><span style="color:#E7EDF5">err</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#E7EDF5">  process</span><span style="color:#17D4FA">.exit</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">1</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">})</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-night-1">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span><span style="color:#2BD99A;font-style:italic">626 Labs — sample Python surface for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#2BD99A;font-style:italic">Cyan owns logic. Magenta owns control flow. Green owns content.</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> __future__ </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> annotations</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> json</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> dataclasses </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> dataclass, field</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> pathlib </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Path</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> typing </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Iterable, Optional</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">BRAND</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> {</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">magenta</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">navy</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#E7EDF5">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">@dataclass</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">frozen=</span><span style="color:#FFB454">True</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    """</span><span style="color:#2BD99A;font-style:italic">A single architectural decision logged for The Architect.</span><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">    id</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    title: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    stakes: </span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#C4CDDA"> =</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">medium</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">    tags: tuple</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#E7EDF5">, </span><span style="color:#FFB454">...</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#17D4FA"> field</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">default_factory=</span><span style="color:#5CE6FF;font-style:italic">tuple</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#E7EDF5">    notes: Optional</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> None</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> is_high_stakes</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">bool</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#FF5AA3"> self</span><span style="color:#E7EDF5">.stakes </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Architect</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> __init__</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">storage</span><span style="color:#E7EDF5">: Path</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.storage </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> storage</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history: list</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> []</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">decision</span><span style="color:#E7EDF5">: Decision</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#E7EDF5"> decision</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> recent</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">limit</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> 10</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Iterable</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]:</span></span>
+<span class="line"><span style="color:#F22F89">        yield from</span><span style="color:#17D4FA"> reversed</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.history</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">-</span><span style="color:#E7EDF5">limit:</span><span style="color:#8E9BAD">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> hydrate</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">        raw </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> json.</span><span style="color:#17D4FA">loads</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.storage.</span><span style="color:#17D4FA">read_text</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">encoding=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">utf-8</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#F22F89">        for</span><span style="color:#E7EDF5"> entry </span><span style="color:#F22F89">in</span><span style="color:#E7EDF5"> raw:</span></span>
+<span class="line"><span style="color:#E7EDF5">            decision </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Decision</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">**</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">            if</span><span style="color:#E7EDF5"> decision.</span><span style="color:#17D4FA">is_high_stakes</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">                print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"high-stakes: </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">decision.id</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#FF5AA3">            self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#17D4FA"> len</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">raw</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">def</span><span style="color:#17D4FA"> main</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">    arch </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Architect</span><span style="color:#8E9BAD">(</span><span style="color:#17D4FA">Path</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">./decisions.json</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#E7EDF5">    count </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> arch.</span><span style="color:#17D4FA">hydrate</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"><span style="color:#17D4FA">    print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"hydrated </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">count</span><span style="color:#FFB454">}</span><span style="color:#2BD99A"> decisions, brand=</span><span style="color:#FFB454">{BRAND</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">]</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">if</span><span style="color:#E7EDF5"> __name__ </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">__main__</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">    main</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-night-2">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#17D4FA;font-weight:bold">#</span><span style="color:#17D4FA;font-weight:bold"> 626 Labs Night</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">A neon-duotone dark theme. Two variants — </span><span style="color:#E7EDF5;font-weight:bold">**Night**</span><span style="color:#C4CDDA"> and </span><span style="color:#E7EDF5;font-weight:bold">**Storm**</span><span style="color:#C4CDDA"> — both built on the 626 Labs palette.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Why this exists</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Tokyo Night is great. Its scope coverage is the gold standard. But the colors aren't ours. This is the same shape — wearing the brand.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Cyan owns </span><span style="color:#C4CDDA;font-style:italic">*logic*</span><span style="color:#C4CDDA">. Magenta owns </span><span style="color:#C4CDDA;font-style:italic">*decision*</span><span style="color:#C4CDDA">. Green carries content. Amber holds constants.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Install</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">```bash</span></span>
+<span class="line"><span style="color:#5CE6FF">code</span><span style="color:#FFB454"> --install-extension</span><span style="color:#2BD99A"> 626labs-night-0.1.0.vsix</span></span>
+<span class="line"><span style="color:#5CE6FF">```</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Then open the command palette and pick </span><span style="color:#E7EDF5;font-weight:bold">**626 Labs Night**</span><span style="color:#C4CDDA"> or </span><span style="color:#E7EDF5;font-weight:bold">**626 Labs Storm**</span><span style="color:#C4CDDA">.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Color principle</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">| Token | Color |</span></span>
+<span class="line"><span style="color:#C4CDDA">|---|---|</span></span>
+<span class="line"><span style="color:#C4CDDA">| Functions | </span><span style="color:#5CE6FF">`#17d4fa`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Keywords | </span><span style="color:#5CE6FF">`#f22f89`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Strings | </span><span style="color:#5CE6FF">`#2bd99a`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Numbers | </span><span style="color:#5CE6FF">`#ffb454`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8E9BAD;font-style:italic">> The duo is always paired, never solo. Cyan without magenta feels incomplete.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">See [</span><span style="color:#F22F89">the README</span><span style="color:#C4CDDA">](</span><span style="color:#F22F89;text-decoration:underline">../../README.md</span><span style="color:#C4CDDA">) for the full table.</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-night-3">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">name</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626labs-night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">displayName</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">version</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">0.1.0</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">publisher</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">estevanhernandez</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">engines</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">vscode</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">^1.80.0</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">categories</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">Themes</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">keywords</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">theme</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">dark</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626labs</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">neon</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">tokyo night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">vibe coding</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">brand</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">duo</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">field</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">tokens</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">logic</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">decision</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">content</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#2bd99a</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">constant</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#ffb454</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">    }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">shipsWith</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span></span>
+<span class="line"><span style="color:#8E9BAD">      {</span><span style="color:#C4CDDA;font-style:italic"> "</span><span style="color:#5CE6FF;font-style:italic">label</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#5CE6FF;font-style:italic">type</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">deeper</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD"> }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#8E9BAD">      {</span><span style="color:#C4CDDA;font-style:italic"> "</span><span style="color:#5CE6FF;font-style:italic">label</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Storm</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#5CE6FF;font-style:italic">type</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">lighter</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD"> }</span></span>
+<span class="line"><span style="color:#8E9BAD">    ]</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">tagline</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">Imagine Something Else.</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-night-4">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#5E6B7F;font-style:italic"># 626 Labs — sample bash for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">set</span><span style="color:#FFB454"> -euo</span><span style="color:#2BD99A"> pipefail</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_CYAN</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_MAGENTA</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> REPO_DIR</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">HOME</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">/Projects/626labs-night</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">log</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> level</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"$1"</span><span style="color:#E7EDF5">; </span><span style="color:#17D4FA">shift</span></span>
+<span class="line"><span style="color:#17D4FA">  printf</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">[%s] %s\n</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">level</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> "</span><span style="color:#FF5AA3">$*</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> >&#x26;2</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">build_theme</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#F22F89">  case</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#F22F89"> in</span></span>
+<span class="line"><span style="color:#5CE6FF">    night</span><span style="color:#C4CDDA">|</span><span style="color:#5CE6FF">storm</span><span style="color:#C4CDDA">)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> info</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">building $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">…</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#C4CDDA">    *)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> error</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">unknown variant: $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#F22F89">      return</span><span style="color:#FFB454"> 1</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#F22F89">  esac</span></span>
+<span class="line"><span style="color:#5CE6FF">  npx</span><span style="color:#FFB454"> --yes</span><span style="color:#FFB454"> -p</span><span style="color:#2BD99A"> @vscode/vsce</span><span style="color:#2BD99A"> vsce</span><span style="color:#2BD99A"> package</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">main</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#17D4FA">  cd</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">REPO_DIR</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#5CE6FF">  build_theme</span><span style="color:#C4CDDA"> "${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#5CE6FF">  log</span><span style="color:#2BD99A"> ok</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">packaged for $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_CYAN</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A"> + $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_MAGENTA</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">main</span><span style="color:#C4CDDA"> "$@"</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-night-5">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">/* 626 Labs — sample CSS surface. */</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">:</span><span style="color:#FF5AA3">root</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-cyan</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#17d4fa</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-magenta</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#f22f89</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-navy</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-gradient</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">linear-gradient</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">135deg</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 0%</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-magenta</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 100%</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --r-md</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --dur-fast</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">120ms</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --ease-out</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">cubic-bezier</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.7</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">1</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">body</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-navy</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#e7edf5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-family</span><span style="color:#C4CDDA">: </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">Inter</span><span style="color:#C4CDDA">'</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">system-ui</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">sans-serif</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-size</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  line-height</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1.5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  padding</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#FFB454"> 16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border-radius</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--r-md</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">0</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-weight</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">600</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  transition</span><span style="color:#C4CDDA">: </span><span style="color:#FF5AA3">filter </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--dur-fast</span><span style="color:#8E9BAD">)</span><span style="color:#17D4FA"> var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--ease-out</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#FFB454">:</span><span style="color:#FF5AA3">hover</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  filter</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">brightness</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">1.08</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#C4CDDA">[</span><span style="color:#17D4FA">data-variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">ghost</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA">]</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1px</span><span style="color:#2BD99A"> solid</span><span style="color:#17D4FA"> rgba</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">23</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">212</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">250</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.45</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">@media</span><span style="color:#8E9BAD"> (</span><span style="color:#E7EDF5">prefers-reduced-motion: reduce</span><span style="color:#8E9BAD">)</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FFB454">  .</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    transition</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">none</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">gradient-text</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-gradient</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  -webkit-background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  </div>
+        </main>
+      </div>
+      <footer class="status-bar">
+        <span>main</span>
+        <span>UTF-8</span>
+        <span>626 Labs Night</span>
+      </footer>
+    </section>
+  
+
+    <section class="vscode-window" style="--editor-bg:#152135;--sidebar-bg:#1e2a3d;--tab-active:#152135;--tab-inactive:#1e2a3d;--fg:#e7edf5;--tab-fg-active:#e7edf5;--tab-fg-inactive:#8e9bad;--tab-border:#17d4fa;--ln-fg:#5e6b7f;--status-bg:#1e2a3d;--status-fg:#c4cdda;--activity-bg:#1e2a3d;--activity-fg:#17d4fa;">
+      <header class="title-bar">
+        <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        <span class="title">626 Labs Storm</span>
+      </header>
+      <div class="window-body">
+        <aside class="activity-bar">
+          <div class="activity-item active"></div>
+          <div class="activity-item"></div>
+          <div class="activity-item"></div>
+          <div class="activity-item"></div>
+        </aside>
+        <aside class="side-bar">
+          <div class="sidebar-section">
+            <div class="sidebar-header">EXPLORER</div>
+            <div class="sidebar-folder">626labs-night</div>
+            <div class="sidebar-file selected">example.ts</div>
+            <div class="sidebar-file">example.py</div>
+            <div class="sidebar-file">example.md</div>
+            <div class="sidebar-file">example.json</div>
+            <div class="sidebar-file">example.sh</div>
+            <div class="sidebar-file">example.css</div>
+          </div>
+        </aside>
+        <main class="editor-shell">
+          <div class="tab-strip">
+    <div class="tab active" data-target="626-labs-storm-0">example.ts</div>
+  
+    <div class="tab " data-target="626-labs-storm-1">example.py</div>
+  
+    <div class="tab " data-target="626-labs-storm-2">example.md</div>
+  
+    <div class="tab " data-target="626-labs-storm-3">example.json</div>
+  
+    <div class="tab " data-target="626-labs-storm-4">example.sh</div>
+  
+    <div class="tab " data-target="626-labs-storm-5">example.css</div>
+  </div>
+          <div class="editor-stack">
+    <div class="editor-pane active" id="626-labs-storm-0">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">// 626 Labs — sample TypeScript surface for the theme preview.</span></span>
+<span class="line"><span style="color:#5E6B7F;font-style:italic">// Cyan owns logic. Magenta owns control flow. Green owns content.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#8E9BAD"> { </span><span style="color:#5CE6FF;font-style:italic">readFileSync</span><span style="color:#8E9BAD"> }</span><span style="color:#F22F89"> from</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">node:fs</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#F22F89"> type</span><span style="color:#8E9BAD"> { </span><span style="color:#5CE6FF;font-style:italic">Project</span><span style="color:#8E9BAD"> }</span><span style="color:#F22F89"> from</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">./types</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">const</span><span style="color:#E7EDF5"> BRAND </span><span style="color:#C4CDDA">=</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#5CE6FF">  cyan:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#5CE6FF">  magenta:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#5CE6FF">  navy:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA"> as</span><span style="color:#FF5AA3"> const</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">interface</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> id</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> project</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Project</span><span style="color:#C4CDDA"> |</span><span style="color:#5CE6FF;font-style:italic"> null</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#FF5AA3">  readonly</span><span style="color:#5CE6FF"> stakes</span><span style="color:#C4CDDA">:</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">low</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> |</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">medium</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> |</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#5CE6FF">  tags</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#8E9BAD">[]</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#5CE6FF">  notes</span><span style="color:#C4CDDA">?:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Architect</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  private</span><span style="color:#FF5AA3"> readonly</span><span style="color:#5CE6FF"> history</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[]</span><span style="color:#C4CDDA"> =</span><span style="color:#8E9BAD"> []</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">  constructor</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">private</span><span style="color:#FF5AA3"> readonly</span><span style="color:#C4CDDA"> storagePath:</span><span style="color:#5CE6FF;font-style:italic"> string</span><span style="color:#8E9BAD">)</span><span style="color:#8E9BAD"> {}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">  log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">entry:</span><span style="color:#5CE6FF;font-style:italic"> Omit</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">DecisionLog</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">id</span><span style="color:#C4CDDA">'</span><span style="color:#E7EDF5">></span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> id</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> crypto</span><span style="color:#17D4FA">.randomUUID</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> next</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#C4CDDA"> =</span><span style="color:#8E9BAD"> { </span><span style="color:#E7EDF5">id</span><span style="color:#8E9BAD">, </span><span style="color:#F22F89;font-weight:bold">...</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD"> };</span></span>
+<span class="line"><span style="color:#FF5AA3">    this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.push</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">next</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#E7EDF5"> next</span><span style="color:#8E9BAD">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">  recent</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">limit</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> 10</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[]</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#FF5AA3"> this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.slice</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">-</span><span style="color:#E7EDF5">limit</span><span style="color:#8E9BAD">)</span><span style="color:#17D4FA">.reverse</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">  async</span><span style="color:#17D4FA"> hydrate</span><span style="color:#8E9BAD">()</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Promise</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">number</span><span style="color:#E7EDF5">> </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> raw</span><span style="color:#C4CDDA"> =</span><span style="color:#17D4FA"> readFileSync</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">this</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">storagePath</span><span style="color:#8E9BAD">, </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">utf8</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#FF5AA3">    const</span><span style="color:#E7EDF5"> parsed</span><span style="color:#C4CDDA"> =</span><span style="color:#5CE6FF;font-style:italic"> JSON</span><span style="color:#17D4FA">.parse</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">raw</span><span style="color:#8E9BAD">) </span><span style="color:#C4CDDA">as</span><span style="color:#5CE6FF;font-style:italic"> DecisionLog</span><span style="color:#8E9BAD">[];</span></span>
+<span class="line"><span style="color:#F22F89">    for</span><span style="color:#8E9BAD"> (</span><span style="color:#FF5AA3">const</span><span style="color:#E7EDF5"> entry</span><span style="color:#C4CDDA"> of</span><span style="color:#E7EDF5"> parsed</span><span style="color:#8E9BAD">) {</span></span>
+<span class="line"><span style="color:#F22F89">      if</span><span style="color:#8E9BAD"> (</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">stakes</span><span style="color:#FF5AA3"> ===</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">) {</span></span>
+<span class="line"><span style="color:#E7EDF5">        console</span><span style="color:#17D4FA">.warn</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">`</span><span style="color:#2BD99A">high-stakes: </span><span style="color:#5CE6FF">${</span><span style="color:#E7EDF5">entry</span><span style="color:#2BD99A">.</span><span style="color:#5CE6FF">id</span><span style="color:#5CE6FF">}</span><span style="color:#C4CDDA">`</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">      }</span></span>
+<span class="line"><span style="color:#FF5AA3">      this</span><span style="color:#17D4FA">.</span><span style="color:#5CE6FF">history</span><span style="color:#17D4FA">.push</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">    }</span></span>
+<span class="line"><span style="color:#F22F89">    return</span><span style="color:#E7EDF5"> parsed</span><span style="color:#8E9BAD">.</span><span style="color:#5CE6FF">length</span><span style="color:#8E9BAD">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">export</span><span style="color:#FF5AA3"> async</span><span style="color:#FF5AA3"> function</span><span style="color:#17D4FA"> main</span><span style="color:#8E9BAD">()</span><span style="color:#C4CDDA">:</span><span style="color:#5CE6FF;font-style:italic"> Promise</span><span style="color:#E7EDF5">&#x3C;</span><span style="color:#5CE6FF;font-style:italic">void</span><span style="color:#E7EDF5">> </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#FF5AA3">  const</span><span style="color:#E7EDF5"> arch</span><span style="color:#C4CDDA"> =</span><span style="color:#C4CDDA"> new</span><span style="color:#17D4FA"> Architect</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">./decisions.json</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#FF5AA3">  const</span><span style="color:#E7EDF5"> count</span><span style="color:#C4CDDA"> =</span><span style="color:#F22F89"> await</span><span style="color:#E7EDF5"> arch</span><span style="color:#17D4FA">.hydrate</span><span style="color:#8E9BAD">();</span></span>
+<span class="line"><span style="color:#E7EDF5">  console</span><span style="color:#17D4FA">.log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">`</span><span style="color:#2BD99A">hydrated </span><span style="color:#5CE6FF">${</span><span style="color:#E7EDF5">count</span><span style="color:#5CE6FF">}</span><span style="color:#2BD99A"> decisions, brand=</span><span style="color:#5CE6FF">${</span><span style="color:#5CE6FF;font-style:italic">BRAND</span><span style="color:#2BD99A">.</span><span style="color:#5CE6FF">cyan</span><span style="color:#5CE6FF">}</span><span style="color:#C4CDDA">`</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">main</span><span style="color:#8E9BAD">()</span><span style="color:#17D4FA">.catch</span><span style="color:#8E9BAD">((</span><span style="color:#C4CDDA">err</span><span style="color:#8E9BAD">)</span><span style="color:#FF5AA3"> =></span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#E7EDF5">  console</span><span style="color:#17D4FA">.error</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">failed to start:</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">, </span><span style="color:#E7EDF5">err</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#E7EDF5">  process</span><span style="color:#17D4FA">.exit</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">1</span><span style="color:#8E9BAD">);</span></span>
+<span class="line"><span style="color:#8E9BAD">})</span><span style="color:#E7EDF5">;</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-storm-1">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span><span style="color:#2BD99A;font-style:italic">626 Labs — sample Python surface for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#2BD99A;font-style:italic">Cyan owns logic. Magenta owns control flow. Green owns content.</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> __future__ </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> annotations</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> json</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> dataclasses </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> dataclass, field</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> pathlib </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Path</span></span>
+<span class="line"><span style="color:#F22F89">from</span><span style="color:#E7EDF5"> typing </span><span style="color:#F22F89">import</span><span style="color:#E7EDF5"> Iterable, Optional</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">BRAND</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> {</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">magenta</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA">    "</span><span style="color:#2BD99A">navy</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#E7EDF5">}</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">@dataclass</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">frozen=</span><span style="color:#FFB454">True</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    """</span><span style="color:#2BD99A;font-style:italic">A single architectural decision logged for The Architect.</span><span style="color:#C4CDDA;font-style:italic">"""</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">    id</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    title: </span><span style="color:#5CE6FF;font-style:italic">str</span></span>
+<span class="line"><span style="color:#E7EDF5">    stakes: </span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#C4CDDA"> =</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">medium</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">    tags: tuple</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#E7EDF5">, </span><span style="color:#FFB454">...</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#17D4FA"> field</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">default_factory=</span><span style="color:#5CE6FF;font-style:italic">tuple</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#E7EDF5">    notes: Optional</span><span style="color:#8E9BAD">[</span><span style="color:#5CE6FF;font-style:italic">str</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> None</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> is_high_stakes</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">bool</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#FF5AA3"> self</span><span style="color:#E7EDF5">.stakes </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">high</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">class</span><span style="color:#5CE6FF;font-style:italic"> Architect</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> __init__</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">storage</span><span style="color:#E7EDF5">: Path</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.storage </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> storage</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history: list</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]</span><span style="color:#C4CDDA"> =</span><span style="color:#E7EDF5"> []</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> log</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">decision</span><span style="color:#E7EDF5">: Decision</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Decision</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#FF5AA3">        self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#E7EDF5"> decision</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> recent</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">limit</span><span style="color:#E7EDF5">: </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#C4CDDA"> =</span><span style="color:#FFB454"> 10</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> Iterable</span><span style="color:#8E9BAD">[</span><span style="color:#E7EDF5">Decision</span><span style="color:#8E9BAD">]:</span></span>
+<span class="line"><span style="color:#F22F89">        yield from</span><span style="color:#17D4FA"> reversed</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.history</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">-</span><span style="color:#E7EDF5">limit:</span><span style="color:#8E9BAD">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">    def</span><span style="color:#17D4FA"> hydrate</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">self</span><span style="color:#8E9BAD">)</span><span style="color:#E7EDF5"> -> </span><span style="color:#5CE6FF;font-style:italic">int</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">        raw </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> json.</span><span style="color:#17D4FA">loads</span><span style="color:#8E9BAD">(</span><span style="color:#FF5AA3">self</span><span style="color:#E7EDF5">.storage.</span><span style="color:#17D4FA">read_text</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">encoding=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">utf-8</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#F22F89">        for</span><span style="color:#E7EDF5"> entry </span><span style="color:#F22F89">in</span><span style="color:#E7EDF5"> raw:</span></span>
+<span class="line"><span style="color:#E7EDF5">            decision </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Decision</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">**</span><span style="color:#E7EDF5">entry</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">            if</span><span style="color:#E7EDF5"> decision.</span><span style="color:#17D4FA">is_high_stakes</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">                print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"high-stakes: </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">decision.id</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#FF5AA3">            self</span><span style="color:#E7EDF5">.history.</span><span style="color:#17D4FA">append</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">decision</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"><span style="color:#F22F89">        return</span><span style="color:#17D4FA"> len</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">raw</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">def</span><span style="color:#17D4FA"> main</span><span style="color:#8E9BAD">()</span><span style="color:#E7EDF5"> -> </span><span style="color:#FFB454">None</span><span style="color:#8E9BAD">:</span></span>
+<span class="line"><span style="color:#E7EDF5">    arch </span><span style="color:#C4CDDA">=</span><span style="color:#17D4FA"> Architect</span><span style="color:#8E9BAD">(</span><span style="color:#17D4FA">Path</span><span style="color:#8E9BAD">(</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">./decisions.json</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">))</span></span>
+<span class="line"><span style="color:#E7EDF5">    count </span><span style="color:#C4CDDA">=</span><span style="color:#E7EDF5"> arch.</span><span style="color:#17D4FA">hydrate</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"><span style="color:#17D4FA">    print</span><span style="color:#8E9BAD">(</span><span style="color:#F22F89">f</span><span style="color:#2BD99A">"hydrated </span><span style="color:#FFB454">{</span><span style="color:#E7EDF5">count</span><span style="color:#FFB454">}</span><span style="color:#2BD99A"> decisions, brand=</span><span style="color:#FFB454">{BRAND</span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">cyan</span><span style="color:#C4CDDA">'</span><span style="color:#8E9BAD">]</span><span style="color:#FFB454">}</span><span style="color:#2BD99A">"</span><span style="color:#8E9BAD">)</span></span>
+<span class="line"></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F22F89">if</span><span style="color:#E7EDF5"> __name__ </span><span style="color:#FF5AA3">==</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">__main__</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">:</span></span>
+<span class="line"><span style="color:#17D4FA">    main</span><span style="color:#8E9BAD">()</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-storm-2">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#17D4FA;font-weight:bold">#</span><span style="color:#17D4FA;font-weight:bold"> 626 Labs Night</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">A neon-duotone dark theme. Two variants — </span><span style="color:#E7EDF5;font-weight:bold">**Night**</span><span style="color:#C4CDDA"> and </span><span style="color:#E7EDF5;font-weight:bold">**Storm**</span><span style="color:#C4CDDA"> — both built on the 626 Labs palette.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Why this exists</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Tokyo Night is great. Its scope coverage is the gold standard. But the colors aren't ours. This is the same shape — wearing the brand.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Cyan owns </span><span style="color:#C4CDDA;font-style:italic">*logic*</span><span style="color:#C4CDDA">. Magenta owns </span><span style="color:#C4CDDA;font-style:italic">*decision*</span><span style="color:#C4CDDA">. Green carries content. Amber holds constants.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Install</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">```bash</span></span>
+<span class="line"><span style="color:#5CE6FF">code</span><span style="color:#FFB454"> --install-extension</span><span style="color:#2BD99A"> 626labs-night-0.1.0.vsix</span></span>
+<span class="line"><span style="color:#5CE6FF">```</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">Then open the command palette and pick </span><span style="color:#E7EDF5;font-weight:bold">**626 Labs Night**</span><span style="color:#C4CDDA"> or </span><span style="color:#E7EDF5;font-weight:bold">**626 Labs Storm**</span><span style="color:#C4CDDA">.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF;font-weight:bold">##</span><span style="color:#5CE6FF;font-weight:bold"> Color principle</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">| Token | Color |</span></span>
+<span class="line"><span style="color:#C4CDDA">|---|---|</span></span>
+<span class="line"><span style="color:#C4CDDA">| Functions | </span><span style="color:#5CE6FF">`#17d4fa`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Keywords | </span><span style="color:#5CE6FF">`#f22f89`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Strings | </span><span style="color:#5CE6FF">`#2bd99a`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"><span style="color:#C4CDDA">| Numbers | </span><span style="color:#5CE6FF">`#ffb454`</span><span style="color:#C4CDDA"> |</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#8E9BAD;font-style:italic">> The duo is always paired, never solo. Cyan without magenta feels incomplete.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C4CDDA">See [</span><span style="color:#F22F89">the README</span><span style="color:#C4CDDA">](</span><span style="color:#F22F89;text-decoration:underline">../../README.md</span><span style="color:#C4CDDA">) for the full table.</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-storm-3">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">name</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626labs-night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">displayName</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">version</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">0.1.0</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">publisher</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">estevanhernandez</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">engines</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">vscode</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">^1.80.0</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">categories</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">Themes</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">keywords</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">theme</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">dark</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626labs</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">neon</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">tokyo night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">vibe coding</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">brand</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">duo</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD">]</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">field</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#0a1524</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">tokens</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">{</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">logic</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">decision</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">content</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#2bd99a</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">      "</span><span style="color:#5CE6FF;font-style:italic">constant</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#ffb454</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">    }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    "</span><span style="color:#5CE6FF;font-style:italic">shipsWith</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#8E9BAD">[</span></span>
+<span class="line"><span style="color:#8E9BAD">      {</span><span style="color:#C4CDDA;font-style:italic"> "</span><span style="color:#5CE6FF;font-style:italic">label</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Night</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#5CE6FF;font-style:italic">type</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">deeper</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD"> }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#8E9BAD">      {</span><span style="color:#C4CDDA;font-style:italic"> "</span><span style="color:#5CE6FF;font-style:italic">label</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">626 Labs Storm</span><span style="color:#C4CDDA">"</span><span style="color:#E7EDF5">, </span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#5CE6FF;font-style:italic">type</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">lighter</span><span style="color:#C4CDDA">"</span><span style="color:#8E9BAD"> }</span></span>
+<span class="line"><span style="color:#8E9BAD">    ]</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span><span style="color:#E7EDF5">,</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  "</span><span style="color:#17D4FA;font-style:italic">tagline</span><span style="color:#C4CDDA;font-style:italic">"</span><span style="color:#E7EDF5">: </span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">Imagine Something Else.</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-storm-4">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#5E6B7F;font-style:italic"># 626 Labs — sample bash for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">set</span><span style="color:#FFB454"> -euo</span><span style="color:#2BD99A"> pipefail</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_CYAN</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_MAGENTA</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> REPO_DIR</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">HOME</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">/Projects/626labs-night</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">log</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> level</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"$1"</span><span style="color:#E7EDF5">; </span><span style="color:#17D4FA">shift</span></span>
+<span class="line"><span style="color:#17D4FA">  printf</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">[%s] %s\n</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">level</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> "</span><span style="color:#FF5AA3">$*</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> >&#x26;2</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">build_theme</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#F22F89">  case</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#F22F89"> in</span></span>
+<span class="line"><span style="color:#5CE6FF">    night</span><span style="color:#C4CDDA">|</span><span style="color:#5CE6FF">storm</span><span style="color:#C4CDDA">)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> info</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">building $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">…</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#C4CDDA">    *)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> error</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">unknown variant: $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#F22F89">      return</span><span style="color:#FFB454"> 1</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#F22F89">  esac</span></span>
+<span class="line"><span style="color:#5CE6FF">  npx</span><span style="color:#FFB454"> --yes</span><span style="color:#FFB454"> -p</span><span style="color:#2BD99A"> @vscode/vsce</span><span style="color:#2BD99A"> vsce</span><span style="color:#2BD99A"> package</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">main</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#17D4FA">  cd</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">REPO_DIR</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#5CE6FF">  build_theme</span><span style="color:#C4CDDA"> "${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#5CE6FF">  log</span><span style="color:#2BD99A"> ok</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">packaged for $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_CYAN</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A"> + $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_MAGENTA</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">main</span><span style="color:#C4CDDA"> "$@"</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  
+    <div class="editor-pane " id="626-labs-storm-5">
+      <div class="line-gutter"></div>
+      <div class="code-area"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">/* 626 Labs — sample CSS surface. */</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">:</span><span style="color:#FF5AA3">root</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-cyan</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#17d4fa</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-magenta</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#f22f89</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-navy</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-gradient</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">linear-gradient</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">135deg</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 0%</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-magenta</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 100%</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --r-md</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --dur-fast</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">120ms</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --ease-out</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">cubic-bezier</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.7</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">1</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">body</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-navy</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#e7edf5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-family</span><span style="color:#C4CDDA">: </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">Inter</span><span style="color:#C4CDDA">'</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">system-ui</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">sans-serif</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-size</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  line-height</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1.5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  padding</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#FFB454"> 16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border-radius</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--r-md</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">0</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-weight</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">600</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  transition</span><span style="color:#C4CDDA">: </span><span style="color:#FF5AA3">filter </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--dur-fast</span><span style="color:#8E9BAD">)</span><span style="color:#17D4FA"> var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--ease-out</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#FFB454">:</span><span style="color:#FF5AA3">hover</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  filter</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">brightness</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">1.08</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#C4CDDA">[</span><span style="color:#17D4FA">data-variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">ghost</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA">]</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1px</span><span style="color:#2BD99A"> solid</span><span style="color:#17D4FA"> rgba</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">23</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">212</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">250</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.45</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">@media</span><span style="color:#8E9BAD"> (</span><span style="color:#E7EDF5">prefers-reduced-motion: reduce</span><span style="color:#8E9BAD">)</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FFB454">  .</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    transition</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">none</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">gradient-text</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-gradient</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  -webkit-background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span></code></pre></div>
+    </div>
+  </div>
+        </main>
+      </div>
+      <footer class="status-bar">
+        <span>main</span>
+        <span>UTF-8</span>
+        <span>626 Labs Storm</span>
+      </footer>
+    </section>
+  
+</div>
+</body>
+</html>

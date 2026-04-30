@@ -1,0 +1,9 @@
+{
+  "name": "preview-render",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "dependencies": {
+    "shiki": "^1.24.0"
+  }
+}

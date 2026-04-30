@@ -1,0 +1,62 @@
+<!doctype html><html><head><meta charset="utf-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      html,body{margin:0;padding:0;background:#050c18;}
+      .frame{background:#152135;color:#e7edf5;padding:24px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;line-height:1.55;}
+      .frame pre{margin:0;background:transparent !important;}
+      .frame .shiki{background:transparent !important;}
+    </style></head><body><div class="frame"><pre class="shiki 626-labs-storm" style="background-color:#152135;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">/* 626 Labs — sample CSS surface. */</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">:</span><span style="color:#FF5AA3">root</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-cyan</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#17d4fa</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-magenta</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#f22f89</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-navy</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --brand-gradient</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">linear-gradient</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">135deg</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 0%</span><span style="color:#FF5AA3">, </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-magenta</span><span style="color:#8E9BAD">)</span><span style="color:#FFB454"> 100%</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --r-md</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --dur-fast</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">120ms</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#E7EDF5">  --ease-out</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">cubic-bezier</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.7</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.2</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">1</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">body</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-navy</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#e7edf5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-family</span><span style="color:#C4CDDA">: </span><span style="color:#C4CDDA">'</span><span style="color:#2BD99A">Inter</span><span style="color:#C4CDDA">'</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">system-ui</span><span style="color:#FF5AA3">, </span><span style="color:#2BD99A">sans-serif</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-size</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  line-height</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1.5</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#5CE6FF">#0a1524</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  padding</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">10px</span><span style="color:#FFB454"> 16px</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border-radius</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--r-md</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">0</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  font-weight</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">600</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  transition</span><span style="color:#C4CDDA">: </span><span style="color:#FF5AA3">filter </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--dur-fast</span><span style="color:#8E9BAD">)</span><span style="color:#17D4FA"> var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--ease-out</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#FFB454">:</span><span style="color:#FF5AA3">hover</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  filter</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">brightness</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">1.08</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">button</span><span style="color:#C4CDDA">[</span><span style="color:#17D4FA">data-variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">ghost</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA">]</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-cyan</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  border</span><span style="color:#C4CDDA">: </span><span style="color:#FFB454">1px</span><span style="color:#2BD99A"> solid</span><span style="color:#17D4FA"> rgba</span><span style="color:#8E9BAD">(</span><span style="color:#FFB454">23</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">212</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">250</span><span style="color:#FF5AA3">, </span><span style="color:#FFB454">0.45</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">@media</span><span style="color:#8E9BAD"> (</span><span style="color:#E7EDF5">prefers-reduced-motion: reduce</span><span style="color:#8E9BAD">)</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FFB454">  .</span><span style="color:#5CE6FF">button</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">    transition</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">none</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">  }</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FFB454">.</span><span style="color:#5CE6FF">gradient-text</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background</span><span style="color:#C4CDDA">: </span><span style="color:#17D4FA">var</span><span style="color:#8E9BAD">(</span><span style="color:#E7EDF5">--brand-gradient</span><span style="color:#8E9BAD">)</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  -webkit-background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  background-clip</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">text</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#C4CDDA;font-style:italic">  color</span><span style="color:#C4CDDA">: </span><span style="color:#2BD99A">transparent</span><span style="color:#C4CDDA">;</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span></code></pre></div></body></html>

@@ -1,0 +1,52 @@
+/* 626 Labs — sample CSS surface. */
+
+:root {
+  --brand-cyan: #17d4fa;
+  --brand-magenta: #f22f89;
+  --brand-navy: #0a1524;
+  --brand-gradient: linear-gradient(135deg, var(--brand-cyan) 0%, var(--brand-magenta) 100%);
+  --r-md: 10px;
+  --dur-fast: 120ms;
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+body {
+  background: var(--brand-navy);
+  color: #e7edf5;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.button {
+  background: var(--brand-cyan);
+  color: #0a1524;
+  padding: 10px 16px;
+  border-radius: var(--r-md);
+  border: 0;
+  font-weight: 600;
+  transition: filter var(--dur-fast) var(--ease-out);
+}
+
+.button:hover {
+  filter: brightness(1.08);
+}
+
+.button[data-variant="ghost"] {
+  background: transparent;
+  color: var(--brand-cyan);
+  border: 1px solid rgba(23, 212, 250, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+}
+
+.gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

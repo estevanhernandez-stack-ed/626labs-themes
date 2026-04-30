@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="utf-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      html,body{margin:0;padding:0;background:#050c18;}
+      .frame{background:#0a1524;color:#e7edf5;padding:24px;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13px;line-height:1.55;}
+      .frame pre{margin:0;background:transparent !important;}
+      .frame .shiki{background:transparent !important;}
+    </style></head><body><div class="frame"><pre class="shiki 626-labs-night" style="background-color:#0a1524;color:#e7edf5" tabindex="0"><code><span class="line"><span style="color:#5E6B7F;font-style:italic">#!/usr/bin/env bash</span></span>
+<span class="line"><span style="color:#5E6B7F;font-style:italic"># 626 Labs — sample bash for the theme preview.</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">set</span><span style="color:#FFB454"> -euo</span><span style="color:#2BD99A"> pipefail</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_CYAN</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#17d4fa</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> BRAND_MAGENTA</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">#f22f89</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#FF5AA3">readonly</span><span style="color:#E7EDF5"> REPO_DIR</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">HOME</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">/Projects/626labs-night</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">log</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> level</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"$1"</span><span style="color:#E7EDF5">; </span><span style="color:#17D4FA">shift</span></span>
+<span class="line"><span style="color:#17D4FA">  printf</span><span style="color:#C4CDDA"> '</span><span style="color:#2BD99A">[%s] %s\n</span><span style="color:#C4CDDA">'</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">level</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> "</span><span style="color:#FF5AA3">$*</span><span style="color:#C4CDDA">"</span><span style="color:#C4CDDA"> >&#x26;2</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">build_theme</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#FF5AA3">  local</span><span style="color:#E7EDF5"> variant</span><span style="color:#C4CDDA">=</span><span style="color:#C4CDDA">"${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#F22F89">  case</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span><span style="color:#F22F89"> in</span></span>
+<span class="line"><span style="color:#5CE6FF">    night</span><span style="color:#C4CDDA">|</span><span style="color:#5CE6FF">storm</span><span style="color:#C4CDDA">)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> info</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">building $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A">…</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#C4CDDA">    *)</span></span>
+<span class="line"><span style="color:#5CE6FF">      log</span><span style="color:#2BD99A"> error</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">unknown variant: $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">variant</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#F22F89">      return</span><span style="color:#FFB454"> 1</span></span>
+<span class="line"><span style="color:#E7EDF5">      ;;</span></span>
+<span class="line"><span style="color:#F22F89">  esac</span></span>
+<span class="line"><span style="color:#5CE6FF">  npx</span><span style="color:#FFB454"> --yes</span><span style="color:#FFB454"> -p</span><span style="color:#2BD99A"> @vscode/vsce</span><span style="color:#2BD99A"> vsce</span><span style="color:#2BD99A"> package</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#17D4FA">main</span><span style="color:#8E9BAD">()</span><span style="color:#8E9BAD"> {</span></span>
+<span class="line"><span style="color:#17D4FA">  cd</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">$</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">REPO_DIR</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#5CE6FF">  build_theme</span><span style="color:#C4CDDA"> "${1:-</span><span style="color:#E7EDF5">night</span><span style="color:#C4CDDA">}"</span></span>
+<span class="line"><span style="color:#5CE6FF">  log</span><span style="color:#2BD99A"> ok</span><span style="color:#C4CDDA"> "</span><span style="color:#2BD99A">packaged for $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_CYAN</span><span style="color:#8E9BAD">}</span><span style="color:#2BD99A"> + $</span><span style="color:#8E9BAD">{</span><span style="color:#E7EDF5">BRAND_MAGENTA</span><span style="color:#8E9BAD">}</span><span style="color:#C4CDDA">"</span></span>
+<span class="line"><span style="color:#8E9BAD">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#5CE6FF">main</span><span style="color:#C4CDDA"> "$@"</span></span>
+<span class="line"></span></code></pre></div></body></html>
